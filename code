@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome To KFC</title>
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.css">
+<style>
+ body{
+  background-color: rgb(227, 81, 103);
+ }
+</style>
+<script>
+function OrderClick() {
+    let name = document.getElementById("txtName").value.trim();
+    let mobile = document.getElementById("txtMobile").value.trim();
+
+    if (!name || !mobile) {
+        alert("Please enter your Name and Mobile number!");
+        return;
+    }
+
+    let BurgerRadio = document.getElementById("optBurger");
+    let PizzaRadio = document.getElementById("optPizza");
+    let wingsCheckbox = document.getElementById("optWings");
+    let KrusherCheckbox = document.getElementById("optKrusher");
+
+    let qtyBurger = parseInt(document.getElementById("qtyBurger").value) || 1;
+    let qtyPizza = parseInt(document.getElementById("qtyPizza").value) || 1;
+    let qtyKrusher = parseInt(document.getElementById("qtyKrusher").value) || 0;
+    let qtyWings = parseInt(document.getElementById("qtyWings").value) || 0;
+
+    let mealName = "";
+    let mealQty = 1;
+    let mealCost = 0;
+    let adonName = [];
+
+    if (BurgerRadio.checked) {
+        mealName = BurgerRadio.value;
+        mealQty = qtyBurger;
+        mealCost = 120 * mealQty;
+    }
+    if (PizzaRadio.checked) {
+        mealName = PizzaRadio.value;
+        mealQty = qtyPizza;
+        mealCost = 100 * mealQty;
+    }
+
+    if (!mealName) {
+        alert("Please select a meal!");
+        return;
+    }
+
+    if (KrusherCheckbox.checked) {
+        adonName.push(`${KrusherCheckbox.value} (x${qtyKrusher})`);
+        mealCost += 60 * qtyKrusher;
+    }
+    if (wingsCheckbox.checked) {
+        adonName.push(`${wingsCheckbox.value} (x${qtyWings})`);
+        mealCost += 20 * qtyWings;
+    }
+
+    // Store order details for repeat order
+    lastOrder = {
+        name: name,
+        mobile: mobile,
+        meal: mealName,
+        mealQty: mealQty,
+        addons: adonName,
+        qtyKrusher: qtyKrusher,
+        qtyWings: qtyWings
+    };
+
+    document.getElementById("lblName").innerHTML = name;
+    document.getElementById("lblMobile").innerHTML = mobile;
+    document.getElementById("lblMeal").innerHTML = `${mealName} (x${mealQty})`;
+    document.getElementById("lblAdon").innerHTML = adonName.length ? adonName.join(", ") : "None";
+    document.getElementById("lblAmount").innerHTML = "&#8377; " + mealCost;
+}
+
+function RepeatOrder() {
+    if (!lastOrder.name) {
+        alert("No previous order found!");
+        return;
+    }
+
+    // Restore customer details
+    document.getElementById("txtName").value = lastOrder.name;
+    document.getElementById("txtMobile").value = lastOrder.mobile;
+
+    // Restore meal selection
+    document.getElementById("optBurger").checked = lastOrder.meal === "OMG Burger";
+    document.getElementById("optPizza").checked = lastOrder.meal === "OMG Pizza";
+
+    document.getElementById("qtyBurger").value = lastOrder.meal === "OMG Burger" ? lastOrder.mealQty : 1;
+    document.getElementById("qtyPizza").value = lastOrder.meal === "OMG Pizza" ? lastOrder.mealQty : 1;
+
+    // Restore add-ons selection and quantity
+    document.getElementById("optKrusher").checked = lastOrder.qtyKrusher > 0;
+    document.getElementById("optWings").checked = lastOrder.qtyWings > 0;
+
+    document.getElementById("qtyKrusher").value = lastOrder.qtyKrusher || 1;
+    document.getElementById("qtyWings").value = lastOrder.qtyWings || 1;
+
+    // Auto-update order details
+    OrderClick();
+}
+
+</script>
+</head>
+<body class="container-fluid">
+  <header>
+<img src="./public/kfc.jpg" alt="" width="100%" height="160px">
+  </header>
+  <section>
+    <div>
+      <div class="accordion" id="kfcOrder">
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="btn btn-danger w-100" data-bs-toggle="collapse" data-bs-target="#customer">
+                    <h3>Customer Details</h3>
+                </button>
+            </div>
+            <div id="customer" class="accordion-body accordion-collapse collapse show"data-bs-parent="#kfcOrder">
+              <dl>
+                <dt>Customer Name</dt>
+                <dd><input type="text" id="txtName" class="form-control"></dd>
+                <dt>Mobile</dt>
+                <dd><input type="text" id="txtMobile" class="form-control"></dd>
+              </dl>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="btn btn-danger w-100" data-bs-toggle="collapse" data-bs-target="#meal">
+                    <h3>Select Your Meal</h3>
+                </button>
+            </div>
+            <div id="meal" class="accordion-body accordion-collapse collapse show" data-bs-parent="#kfcOrder">
+              <div class="row">
+                <div class="col text-center">
+                  <img src="./public/Burger.jpg" alt="" height="200px" width="200px">
+                  <div>
+                    <input type="radio" id="optBurger" value="OMG Burger(120)" name="meal" class="form-check-input">OMG Burger.[&#8377;120/-]
+                    <input type="number" id="qtyBurger" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                  </div>
+                </div>
+                <div class="col text-center">
+                  <img src="./public/pizza.jpg" alt="" height="170px" width="170px">
+                  <div>
+                    <input type="radio" id="optPizza" value="OMG Pizza(100)" name="meal" class="form-check-input">Omg Pizza.[&#8377;100/-]
+                    <input type="number" id="qtyPizza" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="btn btn-danger w-100" data-bs-toggle="collapse" data-bs-target="#adon">
+                    <h3>Selects Ad-On's</h3>
+                </button>
+            </div>
+            <div id="adon" class="accordion-body accordion-collapse collapse show" data-bs-parent="#kfcOrder">
+              <div class="row">
+                <div class="col">
+                  <img src="./public/brownie.jpg" alt="" height="200px" width="200px">
+                  <div>
+                    <input type="checkbox" id="optKrusher" value="Krusher Brownie(60)" class="form-check-input">Krusher Brownie [&#8377;60/-]
+                    <input type="number" id="qtyKrusher" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                  </div>
+                </div>
+                <div class="col">
+                  <img src="./public/wings.jpg" alt="" height="200px" width="200px">
+                  <div>
+                    <input type="checkbox" id="optWings" value="Hot wings(20)" class="form-check-input">Hot Wings [&#8377;20/-]
+                    <input type="number" id="qtyWings" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <button onclick="OrderClick()" data-bs-target="#billsummary" data-bs-toggle="modal" class="btn btn-danger w-100"><h3>Place Order</h3></button>
+              </div>
+              <div class="modal fade" id="billsummary">
+                <div class="modal-dialog">
+                 <div class="modal-content">
+                   <div class="modal-header">
+                    <h3>Your Bill Summery</h3>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                   </div>
+                   <div class="modal-body">
+                    <dl>
+                      <dt class="col-3">Customer Name</dt>
+                      <dd class="col-12" id="lblName"></dd>
+                      <dt class="col-3">Mobile</dt>
+                      <dd class="col-12" id="lblMobile"></dd> 
+                      <dt class="col-3">Meal Name</dt>
+                      <dd class="col-9" id="lblMeal"></dd> 
+                      <dt class="col-3">Ad-On's</dt>
+                      <dd class="col-9" id="lblAdon"></dd>
+                      <dt class="col-3">Total Amount</dt>
+                      <dd class="col-9" id="lblAmount"></dd>
+                    </dl>
+                   </div>
+                   <div class=" modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    <button class="btn btn-warning" onclick="RepeatOrder()">Repeat Order</button>
+                   </div>
+                 </div>
+                </div>
+              </div>
+            </div>
+        </div>
+       
+    </div>
+
+
+    </div>
+  </section>
+  <script src="./node_modules/jquery/dist/jquery.js"></script>
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+</body>
+</html>
